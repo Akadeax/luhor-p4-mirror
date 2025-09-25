@@ -1,0 +1,120 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+
+#include "UpgradesComponent.h"
+#include "BaseUpgrade.h"
+#include "LuhorPrototype/LevelGameInstanceSubsystem.h"
+// Sets default values for this component's properties
+UUpgradesComponent::UUpgradesComponent()
+{
+	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
+	// off to improve performance if you don't need them.
+	PrimaryComponentTick.bCanEverTick = true;
+
+	// ...
+}
+
+FStatModifier UUpgradesComponent::GetCurrentModifier()
+{
+	return CurrentStats;
+}
+
+void UUpgradesComponent::AddUpgrade(TSubclassOf<UBaseUpgrade> UpgradeClass)
+{
+	if (!*UpgradeClass) return;
+	
+	UBaseUpgrade* instance = NewObject<UBaseUpgrade>(this, UpgradeClass);
+	instance->SetUpgradesComponent(this);
+	UE_LOG(LogTemp, Display, TEXT("Adding Upgrade: %s"),*instance->GetTitle());
+	Upgrades.Add(instance);
+	RecalculateModifier();
+	OnUpgradeAdded.Broadcast();
+}
+
+void UUpgradesComponent::RemoveUpgrade(TSubclassOf<UBaseUpgrade> UpgradeClass)
+{
+	if (!*UpgradeClass) return;
+
+	for (int32 i = Upgrades.Num() - 1; i >= 0; --i)
+	{
+		if (Upgrades[i] && Upgrades[i]->IsA(UpgradeClass))
+		{
+			Upgrades.RemoveAt(i);
+		}
+	}
+
+	RecalculateModifier();
+}
+
+void UUpgradesComponent::ClearUpgrades()
+{
+	for (TObjectPtr<UBaseUpgrade> Upgrade : Upgrades)
+	{
+		Upgrade->DeInit();
+	}
+	Upgrades.Empty();
+	
+}
+
+
+void UUpgradesComponent::BeginPlay()
+{
+	Super::BeginPlay();
+	const ULevelGameInstanceSubsystem* sub{ GetWorld()->GetGameInstance()->GetSubsystem<ULevelGameInstanceSubsystem>() };
+	check(sub);
+
+	if (sub->PlayerSaveData.Health == -1) return;
+
+	for (TSubclassOf<UBaseUpgrade> upgrade : sub->PlayerSaveData.Upgrades)
+	{
+		AddUpgrade(upgrade);
+	}
+}
+
+TArray<TSubclassOf<UBaseUpgrade>> UUpgradesComponent::GetUpgrades() const
+{
+	TArray<TSubclassOf<UBaseUpgrade>> result;
+	for (auto& upgrade : Upgrades)
+	{
+		result.Add(upgrade->GetClass());
+	}
+	return result;
+}
+
+
+bool UUpgradesComponent::HasUpgrade(TSubclassOf<UBaseUpgrade> UpgradeClass) const
+{
+	for (const TObjectPtr<UBaseUpgrade>& upgrade : Upgrades)
+	{
+		if (upgrade->IsA(UpgradeClass)) return true;
+	}
+
+	return false;
+}
+
+
+void UUpgradesComponent::TickComponent(float DeltaTime, enum ELevelTick TickType,
+                                       FActorComponentTickFunction* ThisTickFunction)
+{
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+	for (TObjectPtr<UBaseUpgrade> upgrade : Upgrades)
+	{
+		upgrade->Tick(DeltaTime);
+	}
+}
+
+
+void UUpgradesComponent::RecalculateModifier()
+{
+	CurrentStats = {};
+	for (UBaseUpgrade* upgrade : Upgrades)
+	{
+		if (upgrade->IsUpgradeActive)
+		{
+			CurrentStats += upgrade->GetStatModifier();
+		}
+	}
+}
+
+
+
