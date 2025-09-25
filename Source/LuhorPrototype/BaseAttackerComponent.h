@@ -35,10 +35,10 @@ public:
 	UFUNCTION(BlueprintCallable)
 	virtual bool TryAttack() { return false; }
 	
-protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	UFactionAssociation* Faction{};
 
+	UPROPERTY(BlueprintReadOnly)
 	EAttackState CurrentAttackState{ EAttackState::None };
 	FTimerHandle CurrentAttackStateTimer;
 

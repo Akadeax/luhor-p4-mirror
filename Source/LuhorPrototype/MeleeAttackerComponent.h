@@ -36,7 +36,6 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void SetAttackChain(UMeleeAttackChain* AttackChain){MeleeAttackChain = AttackChain;}
 	
-protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	FName MainSkeletalMeshComponentTag{ "main_skeletal_mesh" };
 	
