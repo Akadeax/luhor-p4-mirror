@@ -3,13 +3,13 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Components/SceneComponent.h"
 #include "ComponentDependencies.h"
 #include "LuhorMovementComponent.h"
 #include "HittableComponent.generated.h"
 
 class ULuhorMovementComponent;
 class UHealthComponent;
+class UStaggerComponent;
 class UFactionAssociation;
 
 UENUM(BlueprintType)
@@ -25,6 +25,9 @@ struct FHittableHitData
 	
 	UPROPERTY(BlueprintReadWrite)
 	float Damage{};
+	
+	UPROPERTY(BlueprintReadWrite)
+	float Stagger{};
 	
 	UPROPERTY(BlueprintReadWrite)
 	AActor* Source{};
@@ -127,6 +130,7 @@ protected:
 	
 	UPROPERTY() UShapeComponent* HitBox{};
 	UPROPERTY() UHealthComponent* HealthComponent{};
+	UPROPERTY() UStaggerComponent* StaggerComponent{};
 	UPROPERTY() ULuhorMovementComponent* MovementComponent{};
 	
 	float CurrentInvulnerabilityTimeLeft{};

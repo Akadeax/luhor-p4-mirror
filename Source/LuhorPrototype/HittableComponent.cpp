@@ -8,6 +8,7 @@
 #include "LuhorMovementComponent.h"
 #include "Util/FDebugUtil.h"
 #include "DrawDebugHelpers.h"
+#include "StaggerComponent.h"
 
 COMPDEP_IMPL_START(UHittableComponent)
 	COMPDEP_DEP_ChildRequired(UShapeComponent)
@@ -43,6 +44,7 @@ void UHittableComponent::BeginPlay()
 
 	HealthComponent = FComponentUtil::GetFirstComponentOfClass<UHealthComponent>(GetOwner());
 	MovementComponent = FComponentUtil::GetFirstComponentOfClass<ULuhorMovementComponent>(GetOwner());
+	StaggerComponent = FComponentUtil::GetFirstComponentOfClass<UStaggerComponent>(GetOwner());
 }
 
 void UHittableComponent::HitStun()
@@ -102,6 +104,11 @@ void UHittableComponent::Hit(const FHittableHitData& HitData)
 		}
 		
 		HealthComponent->Damage(damage);
+	}
+	if (StaggerComponent)
+	{
+		float stagger = HitData.Stagger;
+		StaggerComponent->Stagger(stagger);
 	}
 	if (MovementComponent)
 	{

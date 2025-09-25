@@ -66,6 +66,7 @@ void ARangedAttackProjectile::OnCollisionBeginOverlap(
 	
 	const FHittableHitData data{
 		ProjectileData.RangedAttack->AttackData.Damage,
+		ProjectileData.RangedAttack->AttackData.StaggerAmount,
 		ProjectileData.Source,
 		hittable->GetOwner()->GetActorLocation(),
 		ProjectileData.SourceFaction,

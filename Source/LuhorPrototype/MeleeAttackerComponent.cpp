@@ -229,7 +229,7 @@ void UMeleeAttackerComponent::OnContactCollisionBeginOverlap(
 
 	const FMeleeAttackData& data{ GetCurrentAttack() };
 
-	FHittableHitData hitData{ data.Damage, GetOwner(),hittable->GetOwner()->GetActorLocation(), Faction, HitType::Melee };
+	FHittableHitData hitData{ data.Damage,data.StaggerAmount, GetOwner(),hittable->GetOwner()->GetActorLocation(), Faction, HitType::Melee };
 
 	if (UUpgradesComponent* upgrades{ Cast<UUpgradesComponent>(GetOwner()->GetComponentByClass(UUpgradesComponent::StaticClass())) })
 	{

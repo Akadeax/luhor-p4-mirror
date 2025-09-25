@@ -24,6 +24,10 @@ struct LUHORPROTOTYPE_API FMeleeAttackData
 	
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	float Damage{ 5.f };
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	float StaggerAmount{0.0f};
+	
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	FTransform HitBoxTransform{};	
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
@@ -61,6 +65,9 @@ struct LUHORPROTOTYPE_API FRangedAttackData
 	
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	float WindupTime{ 0.2f };
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	float StaggerAmount{0.0f};
 	
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	float ContactTime{ 0.2f };

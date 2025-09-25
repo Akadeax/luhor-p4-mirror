@@ -42,6 +42,8 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	float MaxHealth{ 100.f };
 
+	
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 	bool DestroyOnDeath{ true };
 
