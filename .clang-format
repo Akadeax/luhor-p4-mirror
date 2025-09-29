@@ -77,8 +77,6 @@ AllowShortLambdasOnASingleLine: All
 AllowShortLoopsOnASingleLine: true
 AlwaysBreakAfterDefinitionReturnType: None
 AlwaysBreakBeforeMultilineStrings: false
-AttributeMacros:
-  - __capability
 BinPackArguments: false
 BinPackParameters: false
 BitFieldColonSpacing: Both
@@ -126,13 +124,7 @@ DisableFormat: false
 EmptyLineAfterAccessModifier: Never
 EmptyLineBeforeAccessModifier: LogicalBlock
 ExperimentalAutoDetectBinPacking: false
-FixNamespaceComments: true
-ForEachMacros:
-  - foreach
-  - Q_FOREACH
-  - BOOST_FOREACH
-IfMacros:
-  - KJ_IF_MAYBE
+FixNamespaceComments: false
 IncludeBlocks: Preserve
 IncludeCategories:
   - Regex: ^"(llvm|llvm-c|clang|clang-c)/
@@ -176,8 +168,6 @@ KeepEmptyLines:
   AtStartOfFile: false
 LambdaBodyIndentation: OuterScope
 LineEnding: CRLF
-MacroBlockBegin: ""
-MacroBlockEnd: ""
 MainIncludeChar: Any
 MaxEmptyLinesToKeep: 1
 NamespaceIndentation: All
@@ -210,7 +200,7 @@ RequiresClausePosition: OwnLine
 RequiresExpressionIndentation: OuterScope
 SeparateDefinitionBlocks: Always
 ShortNamespaceLines: 1
-SkipMacroDefinitionBody: false
+SkipMacroDefinitionBody: true
 SortIncludes: Never
 SortJavaStaticImport: Before
 SortUsingDeclarations: Never
@@ -227,10 +217,10 @@ SpaceBeforeJsonColon: false
 SpaceBeforeParens: ControlStatements
 SpaceBeforeParensOptions:
   AfterControlStatements: true
-  AfterForeachMacros: true
+  AfterForeachMacros: false
   AfterFunctionDeclarationName: false
   AfterFunctionDefinitionName: false
-  AfterIfMacros: true
+  AfterIfMacros: false
   AfterOverloadedOperator: false
   AfterPlacementOperator: true
   AfterRequiresInClause: false
@@ -254,21 +244,18 @@ SpacesInParensOptions:
   Other: false
 SpacesInSquareBrackets: false
 Standard: c++20
-StatementAttributeLikeMacros:
-  - Q_EMIT
-StatementMacros:
-  - Q_UNUSED
-  - QT_REQUIRE_VERSION
 TabWidth: 0
 TableGenBreakInsideDAGArg: DontBreak
 UseTab: Never
 VerilogBreakBetweenInstancePorts: true
-WhitespaceSensitiveMacros:
-  - BOOST_PP_STRINGIZE
-  - CF_SWIFT_NAME
-  - NS_SWIFT_NAME
-  - PP_STRINGIZE
-  - STRINGIZE
 BracedInitializerIndentWidth: 4
 KeepEmptyLinesAtEOF: true
 Language: Cpp
+NamespaceMacros:
+  - COMPDEP_IMPL_START
+  - UCLASS
+  - USTRUCT
+  - UENUM
+  - UPROPERTY
+  - UFUNCTION
+  - UINTERFACE
