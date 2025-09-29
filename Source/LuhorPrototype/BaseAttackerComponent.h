@@ -11,40 +11,48 @@ class UFactionAssociation;
 UENUM(BlueprintType)
 enum class EAttackState : uint8
 {
-	None, Windup, Contact, Recovery
+    None,
+    Windup,
+    Contact,
+    Recovery
 };
 
-UCLASS(Abstract, ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
+UCLASS(Abstract, ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
+
 class LUHORPROTOTYPE_API UBaseAttackerComponent : public USceneComponent
 {
-	GENERATED_BODY()
+    GENERATED_BODY()
 
 public:
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnAttackStarted);
-	UPROPERTY(BlueprintAssignable) FOnAttackStarted OnAttackStarted;
-	
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnAttackDone);
-	UPROPERTY(BlueprintAssignable) FOnAttackDone OnAttackDone;
+    DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnAttackStarted);
+    UPROPERTY(BlueprintAssignable)
+    FOnAttackStarted OnAttackStarted;
 
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAttackStateChanged, EAttackState, NewState);
-	UPROPERTY(BlueprintAssignable) FOnAttackStateChanged OnAttackStateChanged;
-	
-	UFUNCTION(BlueprintCallable)
-	bool CanAttack() const;
+    DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnAttackDone);
+    UPROPERTY(BlueprintAssignable)
+    FOnAttackDone OnAttackDone;
 
-	UFUNCTION(BlueprintCallable)
-	virtual bool TryAttack() { return false; }
-	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	UFactionAssociation* Faction{};
+    DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnAttackStateChanged, EAttackState, NewState);
+    UPROPERTY(BlueprintAssignable)
+    FOnAttackStateChanged OnAttackStateChanged;
 
-	UPROPERTY(BlueprintReadOnly)
-	EAttackState CurrentAttackState{ EAttackState::None };
-	FTimerHandle CurrentAttackStateTimer;
+    UFUNCTION(BlueprintCallable)
+    bool CanAttack() const;
 
-	void SetAttackState(EAttackState NewState);
+    UFUNCTION(BlueprintCallable)
 
-	// Calculate a play rate that makes an `originalTime` seconds long section take `desiredTime` seconds 
-	static float ConvertPlayRate(float OriginalTime, float DesiredTime);
-	static float GetSectionPlayRate(const UAnimMontage* Montage, FName SectionName, float DesiredTime);
+    virtual bool TryAttack() { return false; }
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+    UFactionAssociation* Faction{};
+
+    UPROPERTY(BlueprintReadOnly)
+    EAttackState CurrentAttackState{ EAttackState::None };
+    FTimerHandle CurrentAttackStateTimer;
+
+    void SetAttackState(EAttackState NewState);
+
+    // Calculate a play rate that makes an `originalTime` seconds long section take `desiredTime` seconds
+    static float ConvertPlayRate(float OriginalTime, float DesiredTime);
+    static float GetSectionPlayRate(const UAnimMontage* Montage, FName SectionName, float DesiredTime);
 };
