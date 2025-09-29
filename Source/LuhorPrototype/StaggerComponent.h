@@ -6,44 +6,46 @@
 #include "Components/ActorComponent.h"
 #include "StaggerComponent.generated.h"
 
-
-UCLASS(ClassGroup=(Custom), meta=(BlueprintSpawnableComponent))
+UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
 class LUHORPROTOTYPE_API UStaggerComponent : public UActorComponent
 {
-	GENERATED_BODY()
+    GENERATED_BODY()
 
 public:
-	UStaggerComponent();
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnStaggered);
-	UPROPERTY(BlueprintAssignable) FOnStaggered OnStaggered;
+    UStaggerComponent();
+    DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnStaggered);
+    UPROPERTY(BlueprintAssignable)
+    FOnStaggered OnStaggered;
 
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnUnStaggered);
-	UPROPERTY(BlueprintAssignable) FOnUnStaggered OnUnStaggered;
-	
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+    DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnUnStaggered);
+    UPROPERTY(BlueprintAssignable)
+    FOnUnStaggered OnUnStaggered;
 
-	UFUNCTION(BLueprintCallable)
-	virtual void Stagger(float Amount);
+    virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-	UFUNCTION(BLueprintCallable)
-	float GetMaxStagger() const { return MaxStagger; }
+    UFUNCTION(BLueprintCallable)
+    virtual void Stagger(float Amount);
 
-	UFUNCTION(BLueprintCallable)
-	float GetCurrentStagger() const { return CurrentStagger; }
+    UFUNCTION(BLueprintCallable)
+    float GetMaxStagger() const { return MaxStagger; }
 
-	UFUNCTION(BLueprintCallable)
-	bool GetStaggered() const {return IsStaggered;}
+    UFUNCTION(BLueprintCallable)
+    float GetCurrentStagger() const { return CurrentStagger; }
+
+    UFUNCTION(BLueprintCallable)
+    bool GetStaggered() const { return IsStaggered; }
+
 protected:
-	virtual void BeginPlay() override;
-	
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	float MaxStagger{ 100.f };
+    virtual void BeginPlay() override;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	float StaggerFastClearSpeed{ 20.f };
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	float StaggerSlowClearSpeed{ 5.f };
+    UPROPERTY(EditAnywhere)
+    float MaxStagger{ 100.f };
 
-	bool IsStaggered{ false };
-	float CurrentStagger{ 0.f };
+    UPROPERTY(EditAnywhere)
+    float StaggerFastClearSpeed{ 20.f };
+    UPROPERTY(EditAnywhere)
+    float StaggerSlowClearSpeed{ 5.f };
+
+    bool IsStaggered{ false };
+    float CurrentStagger{ 0.f };
 };
