@@ -86,11 +86,17 @@ void UHittableComponent::Hit(const FHittableHitData& HitData)
     if (HitData.SourceFaction == Faction) return;
     if (IsInvulnerable()) return;
     float damage = HitData.Damage;
-    if (ResistanceType != HitType::None && HitData.Type != ResistanceType)
+    if (WeaknessType != HitType::None)
     {
-        damage = HitData.Damage * (1 - ResistancePercentage);
+        if (HitData.Type == WeaknessType)
+        {
+            damage *= WeaknessPercentage;
+        }
+        else
+        {
+            damage = HitData.Damage * (1 - ResistancePercentage);
+        }
     }
-
 
     MakeInvulnerable(InvulnerabilityOnHitTime);
     HitStun();

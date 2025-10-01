@@ -92,9 +92,11 @@ public:
     FMarkConsumed OnMarkConsumed;
 
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    HitType ResistanceType{ HitType::None }; // if it gets hit by other attack than this damage is reduced by 80%
+    HitType WeaknessType{ HitType::None }; // if it gets hit by other attack than this damage is reduced by ResistancePercentage and increased by WeaknessPercentage
     UPROPERTY(EditAnywhere, BlueprintReadWrite)
-    float ResistancePercentage{ 0.8f };
+    float ResistancePercentage{ 0.5f };
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    float WeaknessPercentage{ 0.5f };
 
     void Hit(const FHittableHitData& HitData);
 
