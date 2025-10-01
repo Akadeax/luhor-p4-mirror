@@ -130,6 +130,8 @@ void UMeleeAttackerComponent::DoContact()
 
 	EnableContactCollision(data);
 
+	
+
 	if (MovementComponent)
 	{
 		FVector launchDir{ GetForwardVector() };
