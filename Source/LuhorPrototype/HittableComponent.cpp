@@ -11,149 +11,148 @@
 #include "StaggerComponent.h"
 
 COMPDEP_IMPL_START(UHittableComponent)
-	COMPDEP_DEP_ChildRequired(UShapeComponent)
-	COMPDEP_DEP_AnyOnActorOptional(UHealthComponent)
-	COMPDEP_DEP_AnyOnActorOptional(ULuhorMovementComponent)
+COMPDEP_DEP_ChildRequired(UShapeComponent)
+COMPDEP_DEP_AnyOnActorOptional(UHealthComponent)
+COMPDEP_DEP_AnyOnActorOptional(ULuhorMovementComponent)
 COMPDEP_IMPL_END
 
 UHittableComponent::UHittableComponent()
 {
-	PrimaryComponentTick.bCanEverTick = true;
+    PrimaryComponentTick.bCanEverTick = true;
 }
-
 
 void UHittableComponent::SetMarked()
 {
-	Marked = true;
-	OnMarked.Broadcast();
+    Marked = true;
+    OnMarked.Broadcast();
 }
-
 
 void UHittableComponent::BeginPlay()
 {
-	Super::BeginPlay();
+    Super::BeginPlay();
 
-	HitBox = FComponentUtil::GetChildComponentOfClass<UShapeComponent>(this);
-	FDebugUtil::QuitCheckf(HitBox, TEXT("Actor %s does not have a HitBox!"), *GetOwner()->GetName());
-	
-	constexpr ECollisionChannel HITBOX_CHANNEL{ ECC_GameTraceChannel1 };
-	constexpr ECollisionChannel ATTACKBOX_CHANNEL{ ECC_GameTraceChannel2 };
-	HitBox->SetCollisionObjectType(HITBOX_CHANNEL);
-	HitBox->SetCollisionResponseToChannel(HITBOX_CHANNEL, ECR_Ignore);
-	HitBox->SetCollisionResponseToChannel(ATTACKBOX_CHANNEL, ECR_Overlap);
+    HitBox = FComponentUtil::GetChildComponentOfClass<UShapeComponent>(this);
+    FDebugUtil::QuitCheckf(HitBox, TEXT("Actor %s does not have a HitBox!"), *GetOwner()->GetName());
 
-	HealthComponent = FComponentUtil::GetFirstComponentOfClass<UHealthComponent>(GetOwner());
-	MovementComponent = FComponentUtil::GetFirstComponentOfClass<ULuhorMovementComponent>(GetOwner());
-	StaggerComponent = FComponentUtil::GetFirstComponentOfClass<UStaggerComponent>(GetOwner());
+    constexpr ECollisionChannel HITBOX_CHANNEL{ ECC_GameTraceChannel1 };
+    constexpr ECollisionChannel ATTACKBOX_CHANNEL{ ECC_GameTraceChannel2 };
+    HitBox->SetCollisionObjectType(HITBOX_CHANNEL);
+    HitBox->SetCollisionResponseToChannel(HITBOX_CHANNEL, ECR_Ignore);
+    HitBox->SetCollisionResponseToChannel(ATTACKBOX_CHANNEL, ECR_Overlap);
+
+    HealthComponent = FComponentUtil::GetFirstComponentOfClass<UHealthComponent>(GetOwner());
+    MovementComponent = FComponentUtil::GetFirstComponentOfClass<ULuhorMovementComponent>(GetOwner());
+    StaggerComponent = FComponentUtil::GetFirstComponentOfClass<UStaggerComponent>(GetOwner());
 }
 
 void UHittableComponent::HitStun()
 {
-	CurrentHitStunTimeLeft = HitStunTime;
-	OnHitStun.Broadcast();
+    CurrentHitStunTimeLeft = HitStunTime;
+    OnHitStun.Broadcast();
 }
 
 void UHittableComponent::TickInvulnerability(float DeltaTime)
 {
-	if (CurrentInvulnerabilityTimeLeft <= 0.f) return;
-	
-	CurrentInvulnerabilityTimeLeft -= DeltaTime;
-	if (CurrentInvulnerabilityTimeLeft <= 0.f)
-	{
-		OnInvulnerableEnd.Broadcast();
-	}
+    if (CurrentInvulnerabilityTimeLeft <= 0.f) return;
+
+    CurrentInvulnerabilityTimeLeft -= DeltaTime;
+    if (CurrentInvulnerabilityTimeLeft <= 0.f)
+    {
+        OnInvulnerableEnd.Broadcast();
+    }
 }
 
 void UHittableComponent::TickHitStun(float DeltaTime)
 {
-	if (CurrentHitStunTimeLeft <= 0.f) return;
-	
-	CurrentHitStunTimeLeft -= DeltaTime;
-	if (CurrentHitStunTimeLeft <= 0.f)
-	{
-		OnHitStunEnd.Broadcast();
-	}
+    if (CurrentHitStunTimeLeft <= 0.f) return;
+
+    CurrentHitStunTimeLeft -= DeltaTime;
+    if (CurrentHitStunTimeLeft <= 0.f)
+    {
+        OnHitStunEnd.Broadcast();
+    }
 }
 
 void UHittableComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+    Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	TickInvulnerability(DeltaTime);
-	TickHitStun(DeltaTime);
+    TickInvulnerability(DeltaTime);
+    TickHitStun(DeltaTime);
 }
 
 void UHittableComponent::Hit(const FHittableHitData& HitData)
 {
-	if (HitData.SourceFaction == Faction) return;
-	if (IsInvulnerable()) return;
-	
-	
-	MakeInvulnerable(InvulnerabilityOnHitTime);
-	HitStun();
-	
-	if (HealthComponent)
-	{
-		float damage = HitData.Damage;
-		
-		if (Marked && HitData.Type == HitType::Ranged)
-		{
-			damage *= MarkedDamageMulti;
-			Marked = false;
-			OnMarkConsumed.Broadcast();
-		}
-		
-		HealthComponent->Damage(damage);
-	}
-	if (StaggerComponent)
-	{
-		float stagger = HitData.Stagger;
-		StaggerComponent->Stagger(stagger);
-	}
-	if (MovementComponent)
-	{
-		FVector dir{ HitData.Source->GetActorForwardVector() };
-		dir.Z = 0.f;
-		
-		MovementComponent->DoCurvedLaunch(dir, LaunchOnHitData);
-	}
-	
-	OnHit.Broadcast(HitData);
-}
+    if (HitData.SourceFaction == Faction) return;
+    if (IsInvulnerable()) return;
+    float damage = HitData.Damage;
+    if (ResistanceType != HitType::None && HitData.Type != ResistanceType)
+    {
+        damage = HitData.Damage * (1 - ResistancePercentage);
+    }
 
+
+    MakeInvulnerable(InvulnerabilityOnHitTime);
+    HitStun();
+
+    if (HealthComponent)
+    {
+        if (Marked && HitData.Type == HitType::Ranged)
+        {
+            damage *= MarkedDamageMulti;
+            Marked = false;
+            OnMarkConsumed.Broadcast();
+        }
+
+        HealthComponent->Damage(damage);
+    }
+    if (StaggerComponent)
+    {
+        float stagger = HitData.Stagger;
+        StaggerComponent->Stagger(stagger);
+    }
+    if (MovementComponent)
+    {
+        FVector dir{ HitData.Source->GetActorForwardVector() };
+        dir.Z = 0.f;
+
+        MovementComponent->DoCurvedLaunch(dir, LaunchOnHitData);
+    }
+
+    OnHit.Broadcast(HitData);
+}
 
 void UHittableComponent::CustomHitStun(float Time)
 {
-	CurrentHitStunTimeLeft = Time;
-	OnHitStun.Broadcast();
+    CurrentHitStunTimeLeft = Time;
+    OnHitStun.Broadcast();
 }
-
 
 void UHittableComponent::MakeInvulnerable(float Time, MakeInvulnerableMode Mode)
 {
-	if (Mode == MakeInvulnerableMode::TimeAdditive)
-	{
-		CurrentInvulnerabilityTimeLeft += Time;
-		OnInvulnerable.Broadcast();
-		return;
-	}
+    if (Mode == MakeInvulnerableMode::TimeAdditive)
+    {
+        CurrentInvulnerabilityTimeLeft += Time;
+        OnInvulnerable.Broadcast();
+        return;
+    }
 
-	if (Mode == MakeInvulnerableMode::IfNotInvulnerableAlready && !IsInvulnerable())
-	{
-		CurrentInvulnerabilityTimeLeft = Time;
-		OnInvulnerable.Broadcast();
-		return;
-	}
+    if (Mode == MakeInvulnerableMode::IfNotInvulnerableAlready && !IsInvulnerable())
+    {
+        CurrentInvulnerabilityTimeLeft = Time;
+        OnInvulnerable.Broadcast();
+        return;
+    }
 
-	if (Mode == MakeInvulnerableMode::SetTimeIfLonger && Time > CurrentInvulnerabilityTimeLeft)
-	{
-		CurrentInvulnerabilityTimeLeft = Time;
-		OnInvulnerable.Broadcast();
-	}
+    if (Mode == MakeInvulnerableMode::SetTimeIfLonger && Time > CurrentInvulnerabilityTimeLeft)
+    {
+        CurrentInvulnerabilityTimeLeft = Time;
+        OnInvulnerable.Broadcast();
+    }
 }
 
 void UHittableComponent::MakeVulnerable()
 {
-	CurrentInvulnerabilityTimeLeft = 0.f;
-	OnInvulnerableEnd.Broadcast();
+    CurrentInvulnerabilityTimeLeft = 0.f;
+    OnInvulnerableEnd.Broadcast();
 }

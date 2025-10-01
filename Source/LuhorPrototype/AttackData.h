@@ -8,90 +8,102 @@
 #include "Engine/DataAsset.h"
 #include "AttackData.generated.h"
 
+UENUM(BlueprintType)
+enum class EAttackTypes : uint8
+{
+    None,
+    Ranged,
+    Stab,
+    Slash,
+};
+
 USTRUCT(BlueprintType)
 struct LUHORPROTOTYPE_API FMeleeAttackData
 {
-	GENERATED_BODY()
+    GENERATED_BODY()
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	float WindupTime{ 0.2f };
-	
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	float ContactTime{ 0.2f };
-	
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	float RecoveryTime{ 0.2f };
-	
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	float Damage{ 5.f };
+    UPROPERTY(BlueprintReadWrite, EditAnywhere)
+    float WindupTime{ 0.2f };
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	float StaggerAmount{0.0f};
-	
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	FTransform HitBoxTransform{};	
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	FCurvedLaunchData CurvedLaunchData{};
+    UPROPERTY(BlueprintReadWrite, EditAnywhere)
+    float ContactTime{ 0.2f };
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	TObjectPtr<UAnimMontage> Montage{};
+    UPROPERTY(BlueprintReadWrite, EditAnywhere)
+    float RecoveryTime{ 0.2f };
+
+    UPROPERTY(BlueprintReadWrite, EditAnywhere)
+    float Damage{ 5.f };
+
+    UPROPERTY(BlueprintReadWrite, EditAnywhere)
+    float StaggerAmount{ 0.0f };
+
+    UPROPERTY(BlueprintReadWrite, EditAnywhere)
+    HitType AttackType{ HitType::None };
+
+    UPROPERTY(BlueprintReadWrite, EditAnywhere)
+    FTransform HitBoxTransform{};
+    UPROPERTY(BlueprintReadWrite, EditAnywhere)
+    FCurvedLaunchData CurvedLaunchData{};
+
+    UPROPERTY(BlueprintReadWrite, EditAnywhere)
+    TObjectPtr<UAnimMontage> Montage{};
 };
-
 
 UCLASS(BlueprintType)
 class LUHORPROTOTYPE_API UMeleeAttackChain : public UDataAsset
 {
-	GENERATED_BODY()
+    GENERATED_BODY()
 
 public:
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	TArray<FMeleeAttackData> Attacks{};
-	
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	float ChainLeniencyTime{ 0.2f };
-};
+    UPROPERTY(BlueprintReadWrite, EditAnywhere)
+    TArray<FMeleeAttackData> Attacks{};
 
+    UPROPERTY(BlueprintReadWrite, EditAnywhere)
+    float ChainLeniencyTime{ 0.2f };
+};
 
 USTRUCT(BlueprintType)
 struct LUHORPROTOTYPE_API FRangedAttackData
 {
-	GENERATED_BODY()
+    GENERATED_BODY()
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	TSubclassOf<ARangedAttackProjectile> ProjectileClass{};
+    UPROPERTY(BlueprintReadWrite, EditAnywhere)
+    TSubclassOf<ARangedAttackProjectile> ProjectileClass{};
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	float ProjectileSpeed{ 500.f };
-	
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	float WindupTime{ 0.2f };
+    UPROPERTY(BlueprintReadWrite, EditAnywhere)
+    float ProjectileSpeed{ 500.f };
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	float StaggerAmount{0.0f};
-	
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	float ContactTime{ 0.2f };
-	
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	float RecoveryTime{ 0.2f };
-	
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	float Damage{ 5.f };
-	
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	FCurvedLaunchData CurvedLaunchData{};
+    UPROPERTY(BlueprintReadWrite, EditAnywhere)
+    float WindupTime{ 0.2f };
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	TObjectPtr<UAnimMontage> Montage{};
+    UPROPERTY(BlueprintReadWrite, EditAnywhere)
+    float StaggerAmount{ 0.0f };
+
+    UPROPERTY(BlueprintReadWrite, EditAnywhere)
+    float ContactTime{ 0.2f };
+
+    UPROPERTY(BlueprintReadWrite, EditAnywhere)
+    float RecoveryTime{ 0.2f };
+
+    UPROPERTY(BlueprintReadWrite, EditAnywhere)
+    float Damage{ 5.f };
+
+    UPROPERTY(BlueprintReadWrite, EditAnywhere)
+    HitType AttackType{ HitType::Ranged };
+
+    UPROPERTY(BlueprintReadWrite, EditAnywhere)
+    FCurvedLaunchData CurvedLaunchData{};
+
+    UPROPERTY(BlueprintReadWrite, EditAnywhere)
+    TObjectPtr<UAnimMontage> Montage{};
 };
-
 
 UCLASS(BlueprintType)
 class LUHORPROTOTYPE_API URangedAttack : public UDataAsset
 {
-	GENERATED_BODY()
+    GENERATED_BODY()
 
 public:
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	FRangedAttackData AttackData{};
+    UPROPERTY(BlueprintReadWrite, EditAnywhere)
+    FRangedAttackData AttackData{};
 };
