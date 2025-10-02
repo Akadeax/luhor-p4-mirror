@@ -8,43 +8,43 @@
 
 void ULevelGameInstanceSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
-	Super::Initialize(Collection);
+    Super::Initialize(Collection);
 
-	RoomData = LoadObject<URoomData>(nullptr, TEXT("/Game/Room/RoomData.RoomData"));
-	check(RoomData);
+    RoomData = LoadObject<URoomData>(nullptr, TEXT("/Game/Room/RoomData.RoomData"));
+    check(RoomData);
 }
 
 void ULevelGameInstanceSubsystem::LoadRandomLevel()
 {
-	SavePlayerData();
+    SavePlayerData();
 
-	if (RoomsCompleted++ == 2)
-	{
-		UGameplayStatics::OpenLevel(GetWorld(), RoomData->UpgradeRoom.Level.GetLongPackageFName());
-		return;
-	}
-	
-	if (RoomsLeft.Num() == 0) RefillRoomsLeft();
-	
-	const int index{ FMath::RandRange(0, RoomsLeft.Num() - 1) };
-	UGameplayStatics::OpenLevel(GetWorld(), RoomsLeft[index].Level.GetLongPackageFName());
+    // if (RoomsCompleted++ == 2)
+    //{
+    //	UGameplayStatics::OpenLevel(GetWorld(), RoomData->UpgradeRoom.Level.GetLongPackageFName());
+    //	return;
+    // }
 
-	RoomsLeft.RemoveAt(index);
+    if (RoomsLeft.Num() == 0) RefillRoomsLeft();
+
+    const int index{ FMath::RandRange(0, RoomsLeft.Num() - 1) };
+    UGameplayStatics::OpenLevel(GetWorld(), RoomsLeft[index].Level.GetLongPackageFName());
+
+    RoomsLeft.RemoveAt(index);
 }
 
 void ULevelGameInstanceSubsystem::RefillRoomsLeft()
 {
-	RoomsLeft = RoomData->Rooms;
+    RoomsLeft = RoomData->Rooms;
 }
 
 void ULevelGameInstanceSubsystem::SavePlayerData()
 {
-	const APlayerController* controller{ UGameplayStatics::GetPlayerController(this, 0) };
-	const UAmbrosiaHealthComponent* healthComp{ controller->GetPawn()->FindComponentByClass<UAmbrosiaHealthComponent>() };
-	const UUpgradesComponent* upgradesComp{ controller->GetPawn()->FindComponentByClass<UUpgradesComponent>() };
-	PlayerSaveData = {
-		healthComp->GetCurrentHealth(),
-		healthComp->GetCurrentPoisonedAmbrosia(),
-		upgradesComp->GetUpgrades(),
-	};
+    const APlayerController* controller{ UGameplayStatics::GetPlayerController(this, 0) };
+    const UAmbrosiaHealthComponent* healthComp{ controller->GetPawn()->FindComponentByClass<UAmbrosiaHealthComponent>() };
+    const UUpgradesComponent* upgradesComp{ controller->GetPawn()->FindComponentByClass<UUpgradesComponent>() };
+    PlayerSaveData = {
+        healthComp->GetCurrentHealth(),
+        healthComp->GetCurrentPoisonedAmbrosia(),
+        upgradesComp->GetUpgrades(),
+    };
 }
