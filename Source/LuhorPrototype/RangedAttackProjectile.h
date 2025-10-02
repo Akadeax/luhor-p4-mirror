@@ -13,53 +13,65 @@ class URangedAttack;
 USTRUCT(BlueprintType)
 struct FProjectileData
 {
-	GENERATED_BODY()
+    GENERATED_BODY()
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	URangedAttack* RangedAttack{};
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	UFactionAssociation* SourceFaction{};
-	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	AActor* Source{};
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    URangedAttack* RangedAttack{};
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	FRotator Direction{};
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    UFactionAssociation* SourceFaction{};
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    AActor* Source{};
+
+    UPROPERTY(EditAnywhere, BlueprintReadWrite)
+    FRotator Direction{};
 };
 
 UCLASS()
 class LUHORPROTOTYPE_API ARangedAttackProjectile : public AActor
 {
-	GENERATED_BODY()
+    GENERATED_BODY()
 
 public:
-	ARangedAttackProjectile();
+    ARangedAttackProjectile();
 
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnProjectileHit, const FHittableHitData&, Data, bool, WasLethal, UHittableComponent*, Target);
- 	UPROPERTY(BlueprintAssignable) FOnProjectileHit OnProjectileHit;
+    DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FOnProjectileHit, const FHittableHitData&, Data, bool, WasLethal, UHittableComponent*, Target);
+    UPROPERTY(BlueprintAssignable)
+    FOnProjectileHit OnProjectileHit;
 
-	DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnProjectileHitTerrain, AActor*, Actor, FVector, ImpactPoint);
-	UPROPERTY(BlueprintAssignable) FOnProjectileHitTerrain OnProjectileHitTerrain;
-	
-	void InitializeProjectile(const FProjectileData& Data);
+    DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnProjectileHitTerrain, AActor*, Actor, FVector, ImpactPoint);
+    UPROPERTY(BlueprintAssignable)
+    FOnProjectileHitTerrain OnProjectileHitTerrain;
 
-	virtual void Tick(float DeltaSeconds) override;
-	
+    UFUNCTION(BlueprintCallable)
+    void InitializeProjectile(const FProjectileData& Data);
+
+    virtual void Tick(float DeltaSeconds) override;
+
+    UFUNCTION(BlueprintCallable)
+    void SetDirection(FRotator Direction);
+
+    UFUNCTION(BlueprintCallable)
+    FRotator GetDirection() const { return ProjectileData.Direction; }
+    UPROPERTY(BlueprintReadOnly)
+    bool IsInitialized{ false };
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+    FProjectileData ProjectileData;
+
 protected:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	UBoxComponent* Collision;
+    UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+    UBoxComponent* Collision;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-	FProjectileData ProjectileData;
 
-	UFUNCTION()
-	void OnCollisionBeginOverlap(
-		UPrimitiveComponent* OverlappedComponent,
-		AActor* OtherActor,
-		UPrimitiveComponent* OtherComp,
-		int32 OtherBodyIndex,
-		bool FromSweep,
-		const FHitResult& SweepResult
-	);
+    UFUNCTION()
+    void OnCollisionBeginOverlap(
+    UPrimitiveComponent* OverlappedComponent,
+    AActor* OtherActor,
+    UPrimitiveComponent* OtherComp,
+    int32 OtherBodyIndex,
+    bool FromSweep,
+    const FHitResult& SweepResult);
+
 };
