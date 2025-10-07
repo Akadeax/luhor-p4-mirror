@@ -19,8 +19,6 @@ void ULevelGameInstanceSubsystem::LoadRandomLevel()
 {
     SavePlayerData();
     RoomsCompleted++;
-    UE_LOG(LogTemp, Warning, TEXT("Load Random Level index:%i"), RoomsCompleted - 1);
-    UE_LOG(LogTemp, Warning, TEXT("Levels:%i"), RoomsLeft.Num());
 
     if (RoomsCompleted > RoomsLeft.Num())
     {
