@@ -26,6 +26,7 @@ void ULevelGameInstanceSubsystem::LoadRandomLevel()
 
     if (RoomsLeft.Num() == 0) RefillRoomsLeft();
 
+
     const int index{ FMath::RandRange(0, RoomsLeft.Num() - 1) };
     UGameplayStatics::OpenLevel(GetWorld(), RoomsLeft[index].Level.GetLongPackageFName());
 

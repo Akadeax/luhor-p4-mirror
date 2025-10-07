@@ -14,23 +14,27 @@
 UCLASS()
 class LUHORPROTOTYPE_API ULevelGameInstanceSubsystem : public UGameInstanceSubsystem
 {
-	GENERATED_BODY()
+    GENERATED_BODY()
 
 public:
-	virtual void Initialize(FSubsystemCollectionBase& Collection) override;
+    virtual void Initialize(FSubsystemCollectionBase& Collection) override;
 
-	UFUNCTION(BlueprintCallable)
-	void LoadRandomLevel();
-	
-	UPROPERTY(BlueprintReadOnly) FPlayerSaveData PlayerSaveData;
-	UFUNCTION(BlueprintCallable)
-	void RefillRoomsLeft();
-	UFUNCTION(BlueprintCallable)
-	int GetRoomsCompleted(){return RoomsCompleted;}
+    UFUNCTION(BlueprintCallable)
+    void LoadRandomLevel();
+
+    UPROPERTY(BlueprintReadOnly)
+    FPlayerSaveData PlayerSaveData;
+    UFUNCTION(BlueprintCallable)
+    void RefillRoomsLeft();
+
+    UFUNCTION(BlueprintCallable)
+    int GetRoomsCompleted() { return RoomsCompleted; }
+
 private:
-	void SavePlayerData();
-	
-	UPROPERTY() TObjectPtr<URoomData> RoomData;
-	TArray<FRoom> RoomsLeft;
-	int RoomsCompleted{ 0 };
+    void SavePlayerData();
+
+    UPROPERTY()
+    TObjectPtr<URoomData> RoomData;
+    TArray<FRoom> RoomsLeft;
+    int RoomsCompleted{ 0 };
 };
