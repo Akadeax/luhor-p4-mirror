@@ -12,25 +12,21 @@ void ULevelGameInstanceSubsystem::Initialize(FSubsystemCollectionBase& Collectio
 
     RoomData = LoadObject<URoomData>(nullptr, TEXT("/Game/Room/RoomData.RoomData"));
     check(RoomData);
+    RoomsLeft = RoomData->Rooms;
 }
 
 void ULevelGameInstanceSubsystem::LoadRandomLevel()
 {
     SavePlayerData();
+    RoomsCompleted++;
+    UE_LOG(LogTemp, Warning, TEXT("Load Random Level index:%i"), RoomsCompleted - 1);
+    UE_LOG(LogTemp, Warning, TEXT("Levels:%i"), RoomsLeft.Num());
 
-    // if (RoomsCompleted++ == 2)
-    //{
-    //	UGameplayStatics::OpenLevel(GetWorld(), RoomData->UpgradeRoom.Level.GetLongPackageFName());
-    //	return;
-    // }
-
-    if (RoomsLeft.Num() == 0) RefillRoomsLeft();
-
-
-    const int index{ FMath::RandRange(0, RoomsLeft.Num() - 1) };
-    UGameplayStatics::OpenLevel(GetWorld(), RoomsLeft[index].Level.GetLongPackageFName());
-
-    RoomsLeft.RemoveAt(index);
+    if (RoomsCompleted > RoomsLeft.Num())
+    {
+        RoomsCompleted = RoomsLeft.Num();
+    }
+    UGameplayStatics::OpenLevel(GetWorld(), RoomsLeft[RoomsCompleted - 1].Level.GetLongPackageFName());
 }
 
 void ULevelGameInstanceSubsystem::RefillRoomsLeft()
